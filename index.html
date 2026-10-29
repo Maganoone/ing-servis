@@ -939,6 +939,25 @@ ico=function(id){var g=gd(id);if(g&&g[9])return `<img class='pimg' src='img/${g[
 
 (function(){if(!/^https?:/.test(location.protocol))return;try{fetch('catalog.json?t='+Date.now(),{cache:'no-store'}).then(function(r){return r.ok?r.json():null}).then(function(d){if(applyCatalog(d))render(true)}).catch(function(){})}catch(e){}})();
 
+/* ===== Скидки монтажников из 1С (РегистрСведений.СкидкиНаценкиНоменклатуры) ===== */
+var D1={ok:false,who:{},prof:[],upd:''};
+var INST1C={'Басир Зурабов':'50','Сулейман Хадзиев':'43','Аюп Балхаев':'365'};
+INSTALLERS.forEach(function(x){if(x.c1===undefined&&INST1C[x.name])x.c1=INST1C[x.name]});
+function applyDisc(d){try{D1.who=d.who||{};D1.upd=d.updated||'';D1.prof=(d.profiles||[]).map(function(p){var m={};if(p.only)String(p.only).split(',').forEach(function(id){if(id)m[id]=p.b});var x=p.x||{};for(var k in x)m[k]=x[k];return m});D1.ok=true;if(s.inst||page==='admin')render(true)}catch(e){}}
+function p1c(x){if(!D1.ok||!x||!x.c1)return null;var k=D1.who[String(x.c1).trim().replace(/^0+/,'')];return k===undefined?null:D1.prof[k]}
+var _dOf1=dOf;
+dOf=function(id){if(s.inst&&me){var m=p1c(me);if(m){var b=(m[id]||0)+abonus(me.id);return Math.min(90,Math.round(b*100)/100)}}return _dOf1(id)};
+var _pr1=pr;
+pr=function(g){if(s.inst&&me&&p1c(me)){var b=Math.round(g[5]*(1-dOf(g[0])/100));if(g[0]===dealId())b=Math.round(b*.95);return b}return _pr1(g)};
+var _admCard1=admCard;
+admCard=function(x,i){var h=_admCard1(x,i),m=p1c(x);
+ var info=x.c1?(m?'✅ Цены по скидкам из 1С (код контрагента '+esc(x.c1)+')':(D1.ok?'⚠ Код '+esc(x.c1)+' не найден в скидках 1С':'Скидки из 1С загружаются…')):'Не привязан к 1С — действует скидка по умолчанию';
+ if(m)h=h.replace(/Скидка итого<\/div><b>[^<]*/,'Скидка</div><b>из 1С'+(abonus(x.id)?' +'+abonus(x.id)+'%':''));
+ var row=`<div class='row' style='flex-wrap:nowrap'><span class='mut' style='white-space:nowrap'>Код в 1С</span><input type='text' inputmode='numeric' id='c1-${x.id}' value='${esc(x.c1||'')}' placeholder='код контрагента' style='width:100%'><button class='btn' data-a='ac1' data-id='${x.id}'>Привязать</button></div><div class='mut' style='font-size:13px;margin:4px 0 8px'>${info}</div>`;
+ return h.replace("<div class='dv' style='margin:10px 0'></div>","<div class='dv' style='margin:10px 0'></div>"+row)};
+document.addEventListener('click',function(e){var a=e.target.closest&&e.target.closest('[data-a=ac1]');if(!a)return;var id=a.dataset.id,x=INSTALLERS.filter(function(q){return q.id===id})[0],el=$('c1-'+id);if(!x||!el)return;x.c1=el.value.trim();pins();toast(x.c1?(p1c(x)?'Привязан к 1С: скидки из 1С':'Код сохранён'+(D1.ok?', но в скидках 1С не найден':'')):'Привязка к 1С снята');render(true)});
+if(/^https?:/.test(location.protocol))fetch('discounts.json?t='+Date.now(),{cache:'no-store'}).then(function(r){return r.ok?r.json():null}).then(function(d){if(d)applyDisc(d)}).catch(function(){});
+
 var h0=location.hash.slice(1);if(h0&&h0!=='order'&&h0!=='done')go(h0,true);else render();
 </script>
 </body>
