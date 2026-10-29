@@ -263,7 +263,7 @@ body.hasib{padding-bottom:180px}
 .pi .sp{font-size:12px!important}
 .nost{color:var(--mut)}
 </style>
-<style id='photos'>.pimg{width:100%;height:100%;object-fit:contain;border-radius:inherit;background:#fff}.tile .pimg{padding:6px}.big .pimg{padding:16px}.pr3 .t .pimg,.deal .t .pimg{padding:3px}.ln .pimg{padding:2px}</style></head>
+<style id='photos'>.pimg{width:100%;height:100%;object-fit:contain;border-radius:inherit;background:#fff}.tile .pimg{padding:6px}.big .pimg{padding:16px}.pr3 .t .pimg,.deal .t .pimg{padding:3px}.ln .pimg{padding:2px}</style><style>.hact{display:flex;gap:10px;flex-wrap:wrap;margin-top:20px}.hact button{height:48px;padding:0 22px;border-radius:999px;font:600 16px/1 system-ui,-apple-system,"Segoe UI",Roboto,sans-serif;display:inline-flex;align-items:center;justify-content:center;gap:8px;cursor:pointer;transition:transform .15s,background .15s,box-shadow .15s;white-space:nowrap}.hact .hb1{background:#fff;color:#0b4d3a;border:0;box-shadow:0 6px 18px rgba(0,0,0,.18)}.hact .hb2{background:rgba(255,255,255,.12);color:#fff;border:1.5px solid rgba(255,255,255,.45);backdrop-filter:blur(6px)}.hact .hb1:hover{transform:translateY(-1px);box-shadow:0 10px 24px rgba(0,0,0,.24)}.hact .hb2:hover{background:rgba(255,255,255,.22)}.hact button:active{transform:scale(.97)}@media(max-width:480px){.hact button{flex:1 1 0;padding:0 14px}}</style></head>
 <body>
 <header class="hd"><div class="in">
   <a class="lg" data-go="home"><i>📹</i><span>ИНГ-СЕРВИС</span></a>
@@ -741,7 +741,7 @@ function kitMini(k){var tot=0;Object.keys(k[4]).forEach(function(i){tot+=pr(gd(i
  return `<div class='kc'><span class='e'>${k[1]}</span><div class='nm'>${k[2]}</div><div class='mut'>${k[3]}</div><div class='pp' style='margin-top:auto'>${fmt(tot)}</div><button class='pill' data-a='kadd' data-id='${k[0]}'>В корзину комплект</button></div>`}
 function pHome(){var pop=['c2','n2','h2','s1'].map(gd),I=s.inst;
  var hero=`<section class="hero"><div class="in"><span class="tag">${I?'🔧 '+esc(me.name)+' · монтажная база':'📍 Назрань · магазин видеонаблюдения'}</span><h1>${I?'Оборудование по вашим скидкам':'Видеонаблюдение под ключ'}</h1><p>${I?'Заказывайте по монтажным ценам и составляйте накладные для своих клиентов.':'Скажите, сколько готовы потратить, и мы соберём комплект: камеры, регистратор и диск, которые точно работают вместе.'}</p>`+
- (I?`<div class="row"><button class="btn w" data-go="cab">👤 Мой кабинет</button><button class="btn gh" data-go="catalog">Каталог</button></div>`:
+ (I?`<div class="hact"><button class="hb1" data-go="cab">👤 Мой кабинет</button><button class="hb2" data-go="catalog">📦 Каталог</button></div>`:
  `<div class="hbx"><input type="number" inputmode="numeric" id="hb" placeholder="Ваш бюджет, ₽"><button class="pill" data-a="hbgo">Подобрать</button></div><div class="hlinks"><a data-go="catalog">Смотреть каталог</a><a href="tel:+79380121222">📞 +7 938 012 12 22</a></div><div class="trl"><span>✓ Совместимость</span><span>✓ Доставка</span><span>✓ Монтаж</span><span>✓ Гарантия</span></div>`)+`</div></section>`;
  var secs=[
  I?'':`<div class="sec"><h2>Как заказать</h2><div class="hw"><div><b>1</b>Подберите комплект или товары</div><div><b>2</b>Оформите заказ за минуту</div><div><b>3</b>Мы позвоним и всё подтвердим</div></div></div>`,
@@ -957,6 +957,41 @@ admCard=function(x,i){var h=_admCard1(x,i),m=p1c(x);
  return h.replace("<div class='dv' style='margin:10px 0'></div>","<div class='dv' style='margin:10px 0'></div>"+row)};
 document.addEventListener('click',function(e){var a=e.target.closest&&e.target.closest('[data-a=ac1]');if(!a)return;var id=a.dataset.id,x=INSTALLERS.filter(function(q){return q.id===id})[0],el=$('c1-'+id);if(!x||!el)return;x.c1=el.value.trim();pins();toast(x.c1?(p1c(x)?'Привязан к 1С: скидки из 1С':'Код сохранён'+(D1.ok?', но в скидках 1С не найден':'')):'Привязка к 1С снята');render(true)});
 if(/^https?:/.test(location.protocol))fetch('discounts.json?t='+Date.now(),{cache:'no-store'}).then(function(r){return r.ok?r.json():null}).then(function(d){if(d)applyDisc(d)}).catch(function(){});
+
+/* ===== Монтажники из 1С: список, вход по PIN (на сайте хранится только хэш) ===== */
+var INST_OK=false,LIVE1=/^https?:/.test(location.protocol);
+if(LIVE1)INSTALLERS=[];
+function lset(){try{return JSON.parse(localStorage.getItem('insts2')||'[]')}catch(e){return[]}}
+pins=function(){try{localStorage.setItem('insts2',JSON.stringify(INSTALLERS.map(function(x){var o={id:x.id};['pub','extra','pass','c1'].forEach(function(k){if(x[k]!==undefined)o[k]=x[k]});if(x.id.charAt(0)==='i'){o.name=x.name}return o})))}catch(e){}};
+function applyInst(d){var loc={};lset().forEach(function(x){loc[x.id]=x});var pub={};(d.pub||[]).forEach(function(c){pub[c]=1});
+ var list=(d.items||[]).map(function(r){var o={id:'c'+r.c,name:r.n,c1:r.c,ph:r.h,pub:!!pub[r.c],extra:0},l=loc[o.id];if(l)['pub','extra','pass'].forEach(function(k){if(l[k]!==undefined)o[k]=l[k]});return o});
+ Object.keys(loc).forEach(function(id){var l=loc[id];if(id.charAt(0)==='i'&&l.name)list.push(l)});
+ INSTALLERS=list;INST_OK=true;if(me){var m2=INSTALLERS.filter(function(x){return x.id===me.id})[0];if(m2)me=m2}
+ if(page==='login'||page==='admin'||page==='insts'||s.inst)render(true)}
+if(LIVE1)fetch('installers.json?t='+Date.now(),{cache:'no-store'}).then(function(r){return r.ok?r.json():null}).then(function(d){if(d)applyInst(d);else{INST_OK=true;render(true)}}).catch(function(){INST_OK=true;render(true)});
+else INST_OK=true;
+var _instList1=instList;instList=function(){return _instList1().filter(function(e){return e.x.pub})};
+function sha256hex(t){return crypto.subtle.digest('SHA-256',new TextEncoder().encode(t)).then(function(b){return Array.prototype.map.call(new Uint8Array(b),function(v){return('0'+v.toString(16)).slice(-2)}).join('')})}
+doLogin=function(){var x=INSTALLERS.filter(function(i){return i.id===selI})[0],el=$('lpw'),pw=el?el.value.trim():'';
+ var fin=function(ok){if(ok){me=x;defd=40+bonus(x.id);selI=null;lerr='';setMode(true)}else{lerr='Неправильный пароль';render()}};
+ if(!x||!pw)return fin(false);if(x.pass)return fin(pw===x.pass);
+ if(x.ph&&window.crypto&&crypto.subtle)sha256hex(x.c1+':'+pw).then(function(h){fin(h===x.ph)}).catch(function(){fin(false)});else fin(false)};
+function fltList(inp,sel){var q=inp.value.trim().toLowerCase();document.querySelectorAll(sel).forEach(function(c){c.style.display=(!q||(c.dataset.nm||'').indexOf(q)>=0)?(c.classList.contains('acard')?'':'flex'):'none'})}
+document.addEventListener('input',function(e){var t=e.target;if(t.id==='lfind')fltList(t,'[data-a=lsel]');if(t.id==='afind')fltList(t,'.acard')});
+var _pLogin1=pLogin;
+pLogin=function(){if(s.inst||selI)return _pLogin1();
+ if(!INST_OK)return `<div class='in'><div class='crumb' data-go='home'>← Главная</div><div class='mut' style='text-align:center;margin:40px 0'>Загружаем список монтажников…</div></div>`;
+ return `<div class='in'><div class='crumb' data-go='home'>← Главная</div><div style='max-width:480px;margin:8px auto'><h2 style='margin-bottom:4px'>Кто вы?</h2><p class='mut' style='margin:0 0 12px;font-size:15px'>Найдите своё имя и введите PIN из магазина</p><input type='text' id='lfind' placeholder='🔍 Начните вводить имя' autocomplete='off' style='width:100%;margin-bottom:12px'><div class='col'>${INSTALLERS.map(function(x,i){return `<div class='pc' style='display:flex;flex-direction:row;align-items:center;gap:12px;padding:10px 14px;cursor:pointer' data-a='lsel' data-id='${x.id}' data-nm='${esc(x.name.toLowerCase())}'>${av(x,i,40)}<div style='flex:1;min-width:0'><div class='nm' style='font-size:16px'>${esc(x.name)}</div></div><span class='chev'>›</span></div>`}).join('')||`<div class='mut'>Список пуст</div>`}</div></div></div>`};
+PAGES.login=pLogin;
+var _admIn1=admIn;
+admIn=function(){var h=_admIn1();return h.replace("<div class='col'>","<input type='text' id='afind' placeholder='🔍 Поиск монтажника ("+INSTALLERS.length+")' autocomplete='off' style='width:100%;margin-bottom:10px'><div class='col'>")};
+var _admCard2=admCard;
+admCard=function(x,i){var h=_admCard2(x,i);
+ var tg=`<label class='row' style='gap:8px;margin:0 0 8px;cursor:pointer'><input type='checkbox' data-a='apub' data-id='${x.id}'${x.pub?' checked':''}> Показывать клиентам в разделе «Монтажники»</label>`;
+ h=h.replace("<div class='pc' style='cursor:default'>",`<div class='pc acard' style='cursor:default' data-nm='${esc(x.name.toLowerCase())}'>`);
+ return h.replace("<div class='dv' style='margin:10px 0'></div>","<div class='dv' style='margin:10px 0'></div>"+tg)};
+document.addEventListener('change',function(e){var t=e.target;if(t.dataset&&t.dataset.a==='apub'){var x=INSTALLERS.filter(function(q){return q.id===t.dataset.id})[0];if(x){x.pub=t.checked;pins();toast(x.pub?'Показан клиентам':'Скрыт от клиентов')}}});
+var _board1=board;board=function(per){return _board1(per).filter(function(r){return r.n>0||r.s>0||(me&&r.x.id===me.id)})};
 
 var h0=location.hash.slice(1);if(h0&&h0!=='order'&&h0!=='done')go(h0,true);else render();
 </script>
