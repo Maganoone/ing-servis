@@ -263,7 +263,7 @@ body.hasib{padding-bottom:180px}
 .pi .sp{font-size:12px!important}
 .nost{color:var(--mut)}
 </style>
-</head>
+<style id='photos'>.pimg{width:100%;height:100%;object-fit:contain;border-radius:inherit;background:#fff}.tile .pimg{padding:6px}.big .pimg{padding:16px}.pr3 .t .pimg,.deal .t .pimg{padding:3px}.ln .pimg{padding:2px}</style></head>
 <body>
 <header class="hd"><div class="in">
   <a class="lg" data-go="home"><i>📹</i><span>ИНГ-СЕРВИС</span></a>
@@ -925,7 +925,7 @@ var CAT_ORDER=['Акция!!!','Камеры видеонаблюдения','В
 var CAT_UPD='29.10.2026';
 function applyCatalog(d){if(!d||!d.items||!d.items.length)return false;var keys={};CAT_ORDER.forEach(function(t,k){keys[t]='g'+k});
  var NG=[];d.items.forEach(function(r){var p=r[3]||[];if(!p.length||!keys[p[0]]||!(r[5]>0))return;var t=p[0],cl=function(x){return String(x||'').replace(' в Наличии','').trim()},sub=p.length>1?cl(p[1]):'',desc=p.slice(1,3).map(cl).join(' · ')||(CAT_NAME[t]||t);
-  NG.push([String(r[0]).replace(/^0+/,'')||'0',keys[t],CAT_EMO[t]||'📦',String(r[1]).trim(),desc,Math.round(r[5]),Math.round(r[4]),sub,r[6]?Math.round(r[6]):0])});
+  NG.push([String(r[0]).replace(/^0+/,'')||'0',keys[t],CAT_EMO[t]||'📦',String(r[1]).trim(),desc,Math.round(r[5]),Math.round(r[4]),sub,r[6]?Math.round(r[6]):0,r[7]||''])});
  if(NG.length<50)return false;
  G.length=0;NG.forEach(function(g){G.push(g)});GM={};G.forEach(function(g){GM[g[0]]=g});
  var nc=[['all','Все','🗂']];CAT_ORDER.forEach(function(t){var k=keys[t];if(G.some(function(g){return g[1]===k}))nc.push([k,CAT_NAME[t]||t,CAT_EMO[t]||'📦'])});
@@ -933,6 +933,10 @@ function applyCatalog(d){if(!d||!d.items||!d.items.length)return false;var keys=
  if(d.updated){var u=new Date(d.updated);if(!isNaN(u))CAT_UPD=u.toLocaleString('ru-RU',{day:'2-digit',month:'2-digit',year:'numeric',hour:'2-digit',minute:'2-digit'})}
  var f=document.querySelector('footer .in');if(f)f.innerHTML=f.innerHTML.replace(/Каталог, цены и остатки выгружены из 1С[^<]*/,'Каталог, цены и остатки из 1С обновлены '+CAT_UPD+'. Цены уточняйте у менеджера.');
  return true}
+/* ===== Фото товаров из 1С ===== */
+var _icoSvg=ico;
+ico=function(id){var g=gd(id);if(g&&g[9])return `<img class='pimg' src='img/${g[0]}.jpg?v=${g[9]}' alt='' loading='lazy' onerror="this.style.display='none';this.nextElementSibling.style.display=''">`+_icoSvg(id).replace('<svg ',"<svg style='display:none' ");return _icoSvg(id)};
+
 (function(){if(!/^https?:/.test(location.protocol))return;try{fetch('catalog.json?t='+Date.now(),{cache:'no-store'}).then(function(r){return r.ok?r.json():null}).then(function(d){if(applyCatalog(d))render(true)}).catch(function(){})}catch(e){}})();
 
 var h0=location.hash.slice(1);if(h0&&h0!=='order'&&h0!=='done')go(h0,true);else render();
